@@ -3,7 +3,7 @@
 /boot           emmc    /dev/block/mmcblk0p21                       flags=display="Boot"
 /system         ext4    /dev/block/mmcblk0p24                       flags=display="System"
 /system_image   emmc    /dev/block/mmcblk0p24                       flags=display="System";backup=0;flashimg
-/data           ext4    /dev/block/mmcblk0p49                       flags=length=-16384
+/data           ext4    /dev/block/mmcblk0p49                       flags=encryptable=footer;length=-16384
 /cache          ext4    /dev/block/mmcblk0p25                       flags=display="Cache"
 /persist        ext4    /dev/block/mmcblk0p26                       flags=display="Persist";backup=1
 /persist_image  emmc    /dev/block/mmcblk0p26                       flags=display="Persist";backup=0;flashimg
@@ -58,5 +58,5 @@
 /splash         emmc    /dev/block/mmcblk0p18                       flags=display="Splash";backup=1;flashimg
 /misc           emmc    /dev/block/mmcblk0p27                       flags=display="Misc";backup=1
 #
-/sdcard1        auto    /dev/block/mmcblk1p1                        flags=fsflags=utf8;display="MicroSD";storage;wipeingui;removable
+/sdcard1        auto    /dev/block/mmcblk1p1    /dev/block/mmcblk1p4    flags=fsflags=utf8;display="MicroSD";storage;wipeingui;removable
 /usb-otg        auto    /dev/block/sda1         /dev/block/sda4     flags=fsflags=utf8;display="USB Storage";storage;wipeingui;removable

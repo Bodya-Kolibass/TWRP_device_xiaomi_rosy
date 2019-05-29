@@ -1,0 +1,65 @@
+From a5ce811a738c9030026a1c687a39969626b545b5 Mon Sep 17 00:00:00 2001
+From: Bodya-Kolibass <Mr.Kolibass@gmail.com>
+Date: Wed, 29 May 2019 22:12:05 +0300
+Subject: [PATCH] Add action Reset lockscreen
+
+Change-Id: If238c2b273e682ea20b502f0ac629c5238315309
+Signed-off-by: Bodya-Kolibass <Mr.Kolibass@gmail.com>
+---
+ gui/action.cpp  | 20 ++++++++++++++++++++
+ gui/objects.hpp |  1 +
+ 2 files changed, 21 insertions(+)
+
+diff --git a/gui/action.cpp b/gui/action.cpp
+index ccb7e34..4b237fc 100755
+--- a/gui/action.cpp
++++ b/gui/action.cpp
+@@ -210,6 +210,7 @@ GUIAction::GUIAction(xml_node<>* node)
+ 		ADD_ACTION(refreshsizes);
+ 		ADD_ACTION(nandroid);
+ 		ADD_ACTION(fixcontexts);
++		ADD_ACTION(resetlockscreen);
+ 		ADD_ACTION(fixpermissions);
+ 		ADD_ACTION(dd);
+ 		ADD_ACTION(partitionsd);
+@@ -1278,6 +1279,25 @@ int GUIAction::fixcontexts(std::string arg __unused)
+ 	return 0;
+ }
+ 
++int GUIAction::resetlockscreen(std::string arg __unused)
++{
++	int op_status = 0;
++
++	operation_start("Reset Lockscreen");
++	if (simulate) {
++		simulate_progress_bar();
++	} else {
++		string cmd = "rm -f data/system/*.key data/system/locksettings.*";
++		op_status = TWFunc::Exec_Cmd(cmd);
++	}
++	operation_end(op_status);
++	if (op_status != 0)
++	       LOGINFO("reset lockscreen: Removing lockscreen password/pattern... Failed:  result=%d\n", op_status);
++	else
++	       LOGINFO("reset lockscreen: Removing lockscreen password/pattern... Success: result=%d\n", op_status);
++	return op_status;
++}
++
+ int GUIAction::fixpermissions(std::string arg)
+ {
+ 	return fixcontexts(arg);
+diff --git a/gui/objects.hpp b/gui/objects.hpp
+index 3f72418..b92c065 100644
+--- a/gui/objects.hpp
++++ b/gui/objects.hpp
+@@ -335,6 +335,7 @@ protected:
+ 	int refreshsizes(std::string arg);
+ 	int nandroid(std::string arg);
+ 	int fixcontexts(std::string arg);
++	int resetlockscreen(std::string arg);
+ 	int fixpermissions(std::string arg);
+ 	int dd(std::string arg);
+ 	int partitionsd(std::string arg);
+-- 
+2.7.4
+

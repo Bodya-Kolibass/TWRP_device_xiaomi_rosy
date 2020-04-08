@@ -1,0 +1,184 @@
+From 177cefe2b13a9d9a3e91662bd8c049f37f5dcc4c Mon Sep 17 00:00:00 2001
+From: Bodya-Kolibass <Mr.Kolibass@gmail.com>
+Date: Mon, 23 Mar 2020 13:47:31 +0300
+Subject: [PATCH] Add action Reset lockscreen
+
+Change-Id: I9e53386c075c8f10109048aa9f36d091cf3780fa
+---
+ gui/action.cpp                    | 20 +++++++++++
+ gui/objects.hpp                   |  1 +
+ gui/theme/common/languages/en.xml | 11 ++++++
+ gui/theme/common/languages/ru.xml | 10 ++++++
+ gui/theme/common/portrait.xml     | 56 +++++++++++++++++++++++++++++++
+ 5 files changed, 98 insertions(+)
+
+diff --git a/gui/action.cpp b/gui/action.cpp
+index 0216d84..bd6a0b1 100755
+--- a/gui/action.cpp
++++ b/gui/action.cpp
+@@ -210,6 +210,7 @@ GUIAction::GUIAction(xml_node<>* node)
+ 		ADD_ACTION(refreshsizes);
+ 		ADD_ACTION(nandroid);
+ 		ADD_ACTION(fixcontexts);
++		ADD_ACTION(resetlockscreen);
+ 		ADD_ACTION(fixpermissions);
+ 		ADD_ACTION(dd);
+ 		ADD_ACTION(partitionsd);
+@@ -1278,6 +1279,25 @@ int GUIAction::fixcontexts(std::string arg __unused)
+ 	return 0;
+ }
+ 
++int GUIAction::resetlockscreen(std::string arg __unused)
++{
++	int op_status = 0;
++
++	operation_start("Reset Lockscreen");
++	if (simulate) {
++		simulate_progress_bar();
++	} else {
++		string cmd = "rm -f data/system/*.key data/system/locksettings.*";
++		op_status = TWFunc::Exec_Cmd(cmd);
++	}
++	operation_end(op_status);
++	if (op_status != 0)
++	       LOGINFO("reset lockscreen: Removing lockscreen password/pattern... Failed:  result=%d\n", op_status);
++	else
++	       LOGINFO("reset lockscreen: Removing lockscreen password/pattern... Success: result=%d\n", op_status);
++	return op_status;
++}
++
+ int GUIAction::fixpermissions(std::string arg)
+ {
+ 	return fixcontexts(arg);
+diff --git a/gui/objects.hpp b/gui/objects.hpp
+index 3f72418..b92c065 100644
+--- a/gui/objects.hpp
++++ b/gui/objects.hpp
+@@ -335,6 +335,7 @@ protected:
+ 	int refreshsizes(std::string arg);
+ 	int nandroid(std::string arg);
+ 	int fixcontexts(std::string arg);
++	int resetlockscreen(std::string arg);
+ 	int fixpermissions(std::string arg);
+ 	int dd(std::string arg);
+ 	int partitionsd(std::string arg);
+diff --git a/gui/theme/common/languages/en.xml b/gui/theme/common/languages/en.xml
+index 078fe89..c99c3be 100755
+--- a/gui/theme/common/languages/en.xml
++++ b/gui/theme/common/languages/en.xml
+@@ -12,6 +12,17 @@
+ 		<resource name="font_s" type="fontoverride" filename="RobotoRegular.ttf" scale="100" />
+ 		<resource name="fixed" type="fontoverride" filename="DroidSansMono.ttf" scale="100" />
+ 
++		<!-- Reset Lockscreen function strings -->
++		<string name="reset_lockscreen_btn">Reset Lockscreen</string>
++		<string name="reset_lockscreen_hdr">Reset Lockscreen</string>
++		<string name="reset_lockscreen_confirm">Reset Lockscreen?</string>
++		<string name="reset_lockscreen_note1">If you cannot pass Lockscreen security</string>
++		<string name="reset_lockscreen_note2">after backup restore you should do this.</string>
++		<string name="reset_lockscreen_note3"></string>
++		<string name="swipe_to_reset_lockscreen">Swipe to Reset Lockscreen</string>
++		<string name="resetting_lockscreen">Resetting Lockscreen...</string>
++		<string name="reset_lockscreen_complete">Reset Lockscreen Complete</string>
++
+ 		<!-- Partition display names -->
+ 		<string name="system">System</string>
+ 		<string name="system_image">System Image</string>
+diff --git a/gui/theme/common/languages/ru.xml b/gui/theme/common/languages/ru.xml
+index 5ddc475..397c58e 100644
+--- a/gui/theme/common/languages/ru.xml
++++ b/gui/theme/common/languages/ru.xml
+@@ -12,6 +12,16 @@
+ 		<resource filename="RobotoRegular.ttf" name="font_s" scale="90" type="fontoverride"/>
+ 		<resource filename="DroidSansMono.ttf" name="fixed" scale="100" type="fontoverride"/>
+ 
++		<!-- Reset Lockscreen function strings -->
++		<string name="reset_lockscreen_btn">Удаление паролей экрана блокировки</string>
++		<string name="reset_lockscreen_hdr">Удаление паролей экрана блокировки</string>
++		<string name="reset_lockscreen_note1">Если после восстановления резервной копии</string>
++		<string name="reset_lockscreen_note2">ваш предыдущий пароль, пин или графический ключ</string>
++		<string name="reset_lockscreen_note3">не подходят - выполните удаление.</string>
++		<string name="swipe_to_reset_lockscreen">Свайп для удаления</string>
++		<string name="resetting_lockscreen">Удаление паролей экрана блокировки...</string>
++		<string name="reset_lockscreen_complete">Удаление паролей экрана блокировки завершено</string>
++
+ 		<!-- Partition display names -->
+ 		<string name="system">System</string>
+ 		<string name="system_image">System</string>
+diff --git a/gui/theme/common/portrait.xml b/gui/theme/common/portrait.xml
+index 59cae84..2ebef57 100755
+--- a/gui/theme/common/portrait.xml
++++ b/gui/theme/common/portrait.xml
+@@ -3551,6 +3551,9 @@
+ 					<condition var1="tw_has_data_media" var2="1"/>
+ 					<action function="page">fixcontexts</action>
+ 				</listitem>
++				<listitem name="{@reset_lockscreen_btn=Reset Lockscreen}">
++					<action function="page">resetlockscreen</action>
++				</listitem>
+ 				<listitem name="{@dumlock_btn=HTC Dumlock}">
+ 					<condition var1="tw_show_dumlock" var2="1"/>
+ 					<action function="page">htcdumlock</action>
+@@ -4942,6 +4945,59 @@
+ 			</action>
+ 		</page>
+ 
++		<page name="resetlockscreen">
++			<template name="page"/>
++
++			<text style="text_l">
++				<placement x="%col1_x_header%" y="%row3_header_y%"/>
++				<text>{@advanced_hdr=Advanced}</text>
++			</text>
++
++			<text style="text_m">
++				<placement x="%col1_x_header%" y="%row4_header_y%"/>
++				<text>{@reset_lockscreen_hdr=Reset Lockscreen}</text>
++			</text>
++
++			<text style="text_m_accent">
++				<placement x="%center_x%" y="%row6_y%" placement="5"/>
++				<text>{@reset_lockscreen_note1=If you cannot pass Lockscreen security}</text>
++			</text>
++
++			<text style="text_m_accent">
++				<placement x="%center_x%" y="%row7_y%" placement="5"/>
++				<text>{@reset_lockscreen_note2=after backup restore you should do this.}</text>
++			</text>
++
++			<text style="text_m_accent">
++				<placement x="%center_x%" y="%row8_y%" placement="5"/>
++				<text>{@reset_lockscreen_note3=}</text>
++			</text>
++
++			<slider>
++				<text>{@swipe_to_reset_lockscreen=Swipe to Reset Lockscreen}</text>
++				<actions>
++					<action function="set">tw_back=advanced</action>
++					<action function="set">tw_action=resetlockscreen</action>
++					<action function="set">tw_action_text1={@resetting_lockscreen=Resetting Lockscreen...}</action>
++					<action function="set">tw_complete_text1={@reset_lockscreen_complete=Reset Lockscreen Complete}</action>
++					<action function="set">tw_slider_text={@swipe_to_confirm=Swipe to Confirm}</action>
++					<action function="set">tw_show_reboot=1</action>
++					<action function="page">action_page</action>
++				</actions>
++			</slider>
++
++			<action>
++				<touch key="home"/>
++				<action function="page">main</action>
++			</action>
++
++			<action>
++				<touch key="back"/>
++				<action function="page">advanced</action>
++			</action>
++		</page>
++
++
+ 		<page name="slideout">
+ 			<fill color="%background_color%">
+ 				<placement x="0" y="%row2_header_y%" w="%screen_width%" h="%slideout_bg_height%"/>
+-- 
+2.17.1
+

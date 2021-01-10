@@ -1,0 +1,55 @@
+#!/sbin/sh
+
+wa_y="/tmp/repack";
+fs_tab="${wa_y}/ramdisk/etc/recovery.fstab";
+l_og="/tmp/recovery.log"
+
+ab_ort() {
+	local jo_b="$1";
+	echo -e "\n - - -\nERROR!\n${jo_b}\n - - -\n" >> ${l_og}
+	exit 1
+}
+
+[ -e ${wa_y} ] && rm -rf ${wa_y};
+mkdir -p ${wa_y}/ramdisk;
+[ ! -d ${wa_y}/ramdisk ] && ab_ort "Can't create tempdir!";
+cd ${wa_y} || ab_ort "Can't 'cd' to ${wa_y}";
+magiskboot unpack -h /dev/block/mmcblk0p22;
+cd ${wa_y}/ramdisk || ab_ort "Can't 'cd' to ${wa_y}/ramdisk";
+magiskboot cpio ${wa_y}/*.cpio extract * .
+for F in $(ls ${wa_y}); do
+rm -rf ${wa_y}/ramdisk/${F##*/} 2>/dev/null;
+done
+mi_ui=1;
+[ -z "$(grep -e "/cust" ${fs_tab})" ] && mi_ui=0;
+if [ "$mi_ui" = 1 ]; then
+	sed -i "s|/cust           |/vendor         |g" ${fs_tab};
+	sed -i "s|/cust_image     |/vendor_image   |g" ${fs_tab};
+	sed -i "s|Cust|Vendor|g" ${fs_tab};
+	for F in $(echo ${wa_y}/ramdisk/twres/*.xml); do
+	num_str="$(sed -n "/tw_version/=" "$F" 2>/dev/null)";
+	for FF in ${num_str}; do
+	[ ! -z "${FF}" ] && sed -i "${FF}s/.*/\t\t\t\t\<text\>\%tw_version\%\ (Custom Mode)\<\/text\>/" "$F";
+	done
+	done
+else
+	sed -i "s|/vendor         |/cust           |g" ${fs_tab};
+	sed -i "s|/vendor_image   |/cust_image     |g" ${fs_tab};
+	sed -i "s|Vendor|Cust|g" ${fs_tab};
+	for F in $(echo ${wa_y}/ramdisk/twres/*.xml); do
+	num_str="$(sed -n "/tw_version/=" "$F" 2>/dev/null)";
+	for FF in ${num_str}; do
+	[ ! -z "${FF}" ] && sed -i "${FF}s/.*/\t\t\t\t\<text\>\%tw_version\%\ (MIUI Mode)\<\/text\>/" "$F";
+	done
+	done
+fi
+rm -rf ${wa_y}/*.cpio;
+find . | sed -e "s/^.\///g" -e "/^\.$/d" | cpio -H newc -o > ../ramdisk.cpio;
+[ ! -f "${wa_y}/ramdisk.cpio" ] && ab_ort "Can't create new ramdisk.cpio!";
+cd .. || ab_ort "Can't 'cd' to ${wa_y}";
+magiskboot repack /dev/block/mmcblk0p22 ${wa_y}/twrp.img;
+[ ! -f "${wa_y}/twrp.img" ] && ab_ort "Can't repack recovery image!";
+dd if="${wa_y}/twrp.img" of=/dev/block/mmcblk0p22;
+rm -rf ${wa_y};
+reboot recovery
+exit

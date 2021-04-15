@@ -1,7 +1,7 @@
 TWRP device tree for Xiaomi Redmi 5 (rosy)
 ========================================================
 
-<img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.3.0-0/total">   <img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.3.1-0/total">   <img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.3.1-1/total">   <img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.5.0_9-0/total">
+<img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.3.0-0/total">   <img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.3.1-0/total">   <img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.3.1-1/total">   <img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.5.0_9-0/total">   <img alt="GitHub Releases" src="https://img.shields.io/github/downloads/Bodya-Kolibass/TWRP_device_xiaomi_rosy/3.5.2_9-0/total">
 
 How to build:
 --------------------------------------------

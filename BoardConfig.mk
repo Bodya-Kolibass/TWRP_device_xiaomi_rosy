@@ -41,6 +41,7 @@ TARGET_USERIMAGES_USE_F2FS := true
 
 # TWRP Configuration
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/twrp.fstab
+RECOVERY_SDCARD_ON_DATA := true
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/soc/7000000.ssusb/7000000.dwc3/gadget/lun0/file"
 TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight/brightness"
@@ -54,6 +55,7 @@ TW_DEVICE_VERSION := 0 for Redmi5 Rosy
 TW_EXCLUDE_TWRPAPP := true
 TW_FORCE_USE_BUSYBOX := true
 TW_INCLUDE_REPACKTOOLS := true
+TW_EXCLUDE_BASH := true
 
 # Encryption
 TARGET_HW_DISK_ENCRYPTION := true

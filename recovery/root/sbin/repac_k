@@ -51,5 +51,4 @@ magiskboot repack /dev/block/mmcblk0p22 ${wa_y}/twrp.img;
 [ ! -f "${wa_y}/twrp.img" ] && ab_ort "Can't repack recovery image!";
 dd if="${wa_y}/twrp.img" of=/dev/block/mmcblk0p22;
 rm -rf ${wa_y};
-reboot recovery
 exit

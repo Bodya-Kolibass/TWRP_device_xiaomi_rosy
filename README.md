@@ -12,7 +12,7 @@ repo sync -f --force-sync
 mkdir device && mkdir device/xiaomi && mkdir device/xiaomi/rosy   
 git clone https://github.com/Bodya-Kolibass/TWRP_device_xiaomi_rosy.git -b android-8.1 device/xiaomi/rosy   
 rm -rf bootable/recovery    
-git clone https://github.com/Bodya-Kolibass/android_bootable_recovery.git -b rosy-3.5.0 bootable/recovery    
+git clone https://github.com/Bodya-Kolibass/android_bootable_recovery.git -b rosy-3.5.2 bootable/recovery    
 . build/envsetup.sh   
 lunch rosy-eng    
 mka recoveryimage   
